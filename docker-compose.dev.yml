@@ -1,0 +1,13 @@
+services:
+  async_api:
+    ports:
+      - 8000:80
+  elastic:
+    ports:
+      - 9200:9200
+  redis:
+    ports:
+      - 6379:6379
+  postgres:
+    ports:
+      - 5432:5432
