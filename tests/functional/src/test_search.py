@@ -6,7 +6,7 @@ import pytest
 
 from elasticsearch import AsyncElasticsearch
 
-from tests.functional.settings import test_settings
+from functional.settings import test_settings
 
 
 #  Название теста должно начинаться со слова `test_`
