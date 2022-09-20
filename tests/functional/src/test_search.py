@@ -1,4 +1,3 @@
-import datetime
 import uuid
 import json
 
@@ -9,11 +8,11 @@ from elasticsearch import AsyncElasticsearch
 
 from tests.functional.settings import test_settings
 
-import pprint
-
 
 #  Название теста должно начинаться со слова `test_`
-#  Любой тест с асинхронными вызовами нужно оборачивать декоратором `pytest.mark.asyncio`, который следит за запуском и работой цикла событий.
+#  Любой тест с асинхронными вызовами нужно оборачивать
+#  декоратором `pytest.mark.asyncio`, который следит за
+#  запуском и работой цикла событий.
 
 @pytest.mark.asyncio
 async def test_search():
