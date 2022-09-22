@@ -11,6 +11,7 @@ RUN  pip install --no-cache-dir --upgrade pip \
      && pip install --no-cache-dir -r requirements.txt
 
 COPY . ./functional/
+COPY __init__.py ./
 
 ENTRYPOINT ["pytest", "./functional/src"]
 #CMD ["python3", "-m", "http.server", "8000"]
