@@ -6,7 +6,7 @@ import pytest
 
 from elasticsearch import AsyncElasticsearch
 
-from functional.settings import test_settings
+from tests.functional.settings import test_settings
 
 
 #  Название теста должно начинаться со слова `test_`
@@ -40,7 +40,7 @@ async def test_search():
     bulk_query = []
     for row in es_data:
         bulk_query.extend([
-            json.dumps({'index': {'_index': test_settings.es_index, '_id': row[test_settings.es_id_field]}}),
+            json.dumps({'index': {'_index': test_settings.elastic_index, '_id': row[test_settings.elastic_id_field]}}),
             json.dumps(row)
         ])
 
@@ -48,7 +48,7 @@ async def test_search():
 
     # 2. Загружаем данные в ES
 
-    es_client = AsyncElasticsearch(hosts=test_settings.es_host,
+    es_client = AsyncElasticsearch(hosts=test_settings.elastic_host,
                                    validate_cert=False,
                                    use_ssl=False)
     response = await es_client.bulk(str_query, refresh=True)
@@ -59,7 +59,7 @@ async def test_search():
     # 3. Запрашиваем данные из ES по API
 
     session = aiohttp.ClientSession()
-    url = test_settings.service_url + '/api/v1/films/search'
+    url = test_settings.api_url + '/api/v1/films/search'
     query_data = {'query': 'The Star'}
     async with session.get(url, params=query_data) as response:
         body = await response.json()
@@ -68,6 +68,5 @@ async def test_search():
     await session.close()
 
     # 4. Проверяем ответ
-
     assert status == 200
     assert len(body) == 100
