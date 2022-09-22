@@ -3,6 +3,7 @@ from pydantic import BaseSettings, Field
 
 class TestSettings(BaseSettings):
     elastic_host: str = '127.0.0.1'
+    elastic_port: str = '9200'
     elastic_index: str = 'movies'
     elastic_id_field: str = 'id'
     elastic_index_mapping: dict = ''
