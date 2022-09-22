@@ -2,13 +2,12 @@ from pydantic import BaseSettings, Field
 
 
 class TestSettings(BaseSettings):
-    es_host: str = Field('http://127.0.0.1:9200', env='ELASTIC_HOST')
-    es_index: str = 'movies'
-    es_id_field: str = 'id'
-    es_index_mapping: dict = ''
-
+    elastic_host: str = '127.0.0.1'
+    elastic_index: str = 'movies'
+    elastic_id_field: str = 'id'
+    elastic_index_mapping: dict = ''
     redis_host: str = ''
-    service_url: str = 'http://127.0.0.1:8500'
+    api_url: str = 'http://127.0.0.1:8000'
 
 
 test_settings = TestSettings()
