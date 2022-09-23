@@ -14,5 +14,5 @@ RUN  pip install --no-cache-dir --upgrade pip \
 COPY . ./functional/
 COPY __init__.py ./
 
-ENTRYPOINT python ./functional/utils/wait_for_es.py && pytest ./functional/src
+ENTRYPOINT python ./functional/utils/wait_for_es.py && python ./functional/utils/wait_for_redis.py && pytest ./functional/src
 #CMD ["python3", "-m", "http.server", "8000"]
