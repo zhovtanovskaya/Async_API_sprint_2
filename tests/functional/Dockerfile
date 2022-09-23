@@ -4,6 +4,7 @@ WORKDIR /opt/app/tests/
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV PYTHONPATH="$PYTHONPATH:/opt/app/"
 
 COPY requirements.txt .
 
@@ -13,5 +14,5 @@ RUN  pip install --no-cache-dir --upgrade pip \
 COPY . ./functional/
 COPY __init__.py ./
 
-ENTRYPOINT ["pytest", "./functional/src"]
+ENTRYPOINT python ./functional/utils/wait_for_es.py && pytest ./functional/src
 #CMD ["python3", "-m", "http.server", "8000"]
