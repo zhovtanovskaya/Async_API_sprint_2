@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from elasticsearch import AsyncElasticsearch, NotFoundError
 
 from models.base_model import DBModel
@@ -31,7 +33,7 @@ class ElasticService(AbstractService):
             return None
         return self._to_object(doc)
 
-    async def get_all(self) -> list[DBModel]:
+    async def get_all(self) -> Iterable[DBModel]:
         """Получить все записи в индексе.
 
         Returns:

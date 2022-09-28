@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Iterable
 
 from models.base_model import DBModel
 
@@ -10,5 +11,5 @@ class AbstractService(ABC):
         ...
 
     @abstractmethod
-    def get_all(self) -> list[DBModel]:
+    def get_all(self) -> Iterable[DBModel]:
         ...
