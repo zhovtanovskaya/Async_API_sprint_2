@@ -8,7 +8,7 @@ from fastapi import Depends
 from db.elastic import get_elastic
 from models.base_model import DBModel
 from models.person import Person
-from services.base import ElasticService
+from services.elastic import ElasticService
 
 
 class PersonService(ElasticService):

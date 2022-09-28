@@ -1,43 +1,15 @@
-from typing import List
-
-from elasticsearch import AsyncElasticsearch, NotFoundError
+from abc import ABC, abstractmethod
+from typing import Iterable
 
 from models.base_model import DBModel
 
 
-class ElasticService:
-    """Сервис для получения объектов из индексов Elastic объектов."""
+class AbstractService(ABC):
 
-    def __init__(self, elastic: AsyncElasticsearch, index: str, db_model: DBModel):
-        self.elastic = elastic
-        self.index = index
-        self.db_model = db_model
+    @abstractmethod
+    def get_by_id(self, id: str) -> DBModel | None:
+        ...
 
-    def _to_object(self, doc: dict) -> DBModel:
-        """Преобразовать документ индекса Elastic в объект."""
-        return self.db_model(**doc['_source'])
-
-    async def get_by_id(self, id: str) -> DBModel | None:
-        """Получить жанр по ID.
-
-        Args:
-            id: UUID жанра.
-
-        Returns:
-            Экземпляр Genre.
-        """
-        try:
-            doc = await self.elastic.get(self.index, id)
-        except NotFoundError:
-            return None
-        return self._to_object(doc)
-
-    async def get_all(self) -> list[DBModel]:
-        """Получить все записи в индексе.
-
-        Returns:
-            Все объекты в виде списка.
-        """
-        results = await self.elastic.search(index=self.index)
-        hits = results['hits']['hits']
-        return [self._to_object(hit) for hit in hits]
+    @abstractmethod
+    def get_all(self) -> Iterable[DBModel]:
+        ...
