@@ -1,5 +1,3 @@
-from typing import List
-
 from elasticsearch import AsyncElasticsearch, NotFoundError
 
 from models.base_model import DBModel

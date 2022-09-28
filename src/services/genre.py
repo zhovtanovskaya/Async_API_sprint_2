@@ -6,7 +6,7 @@ from fastapi import Depends
 
 from db.elastic import get_elastic
 from models.genre import Genre
-from services.base import ElasticService
+from services.elastic import ElasticService
 
 
 class GenreService(ElasticService):
