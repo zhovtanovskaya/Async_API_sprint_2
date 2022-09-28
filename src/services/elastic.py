@@ -1,10 +1,10 @@
 from elasticsearch import AsyncElasticsearch, NotFoundError
 
 from models.base_model import DBModel
-from services.base import AbstractStorage
+from services.base import AbstractService
 
 
-class ElasticService(AbstractStorage):
+class ElasticService(AbstractService):
     """Сервис для получения объектов из индексов Elastic объектов."""
 
     def __init__(self, elastic: AsyncElasticsearch, index: str, db_model: DBModel):

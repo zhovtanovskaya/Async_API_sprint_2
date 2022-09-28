@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from models.base_model import DBModel
 
 
-class AbstractStorage(ABC):
+class AbstractService(ABC):
 
     @abstractmethod
     def get_by_id(self, id: str) -> DBModel | None:
