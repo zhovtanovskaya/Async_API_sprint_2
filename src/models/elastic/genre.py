@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from models.genre_base import GenreBase
+from models.elastic.genre_base import GenreBase
 
 
 class Genre(GenreBase):

@@ -1,12 +1,14 @@
 import orjson
 from pydantic import BaseModel
 
+from models.abstract import DBModel
+
 
 def orjson_dumps(v, *, default):
     return orjson.dumps(v, default=default).decode()
 
 
-class DBModel(BaseModel):
+class ElasticModel(BaseModel, DBModel):
     """Миксин для моделей проекта Movies."""
 
     id: str

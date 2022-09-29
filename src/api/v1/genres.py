@@ -6,10 +6,12 @@ from uuid import UUID
 from aioredis import Redis
 from fastapi import APIRouter, Depends, HTTPException
 
-from api.v1.models import Genre
+from models.api.v1.movies import Genre
 from api.v1.redis_cache import RedisCache
 from db.redis import get_redis
-from services.genre import GenreService, get_genre_service
+from services.abstract import AbstractDetailsService
+from services.base import get_genre_service
+from services.elastic.genre import GenreService
 
 router = APIRouter()
 
@@ -30,7 +32,7 @@ async def genre_list(
 @RedisCache(exclude_kwargs=('genre_service',))
 async def genre_details(
         genre_id: UUID,
-        genre_service: GenreService = Depends(get_genre_service),
+        genre_service: AbstractDetailsService = Depends(get_genre_service),
         redis: Redis = Depends(get_redis),
         ) -> Genre | None:
     """Получить жанр по идентификатору."""

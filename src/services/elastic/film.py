@@ -1,47 +1,39 @@
 import logging
-from functools import lru_cache
 from uuid import UUID
 
-from aioredis import Redis
 from elasticsearch import AsyncElasticsearch, NotFoundError
-from fastapi import Depends
 
-from db.elastic import get_elastic
-from db.redis import get_redis
-from models.film import Film
-from models.film_base import FilmBase
-
-FILM_CACHE_EXPIRE_IN_SECONDS = 60 * 5
+from models.elastic.film import Film
+from models.elastic.film_base import FilmBase
+from services.abstract import AbstractDetailsService
 
 
-class FilmService:
+class FilmService(AbstractDetailsService):
     """Сервис по получению данных по эндпоинтам /films."""
 
-    def __init__(self, redis: Redis, elastic: AsyncElasticsearch) -> None:
-        """Инициализировать сервис, установив соединения с Redis и ES.
+    def __init__(self, elastic: AsyncElasticsearch) -> None:
+        """Инициализировать сервис, установив соединение с ES.
 
         Args:
-            redis: соединение с Redis.
             elastic: соединение с Elasticsearch.
 
         Returns:
             None.
         """
-        self.redis = redis
         self.elastic = elastic
         self.sort_fields = ['imdb_rating',]
 
-    async def get_by_id(self, film_id: str) -> Film | None:
+    async def get_by_id(self, id: str) -> Film | None:
         """Найти фильм в базе данных elasticsearch.
 
         Args:
-            film_id: uuid фильма.
+            id: uuid фильма.
 
         Returns:
             Объект типа Film или None, если фильм не найден.
         """
         try:
-            doc = await self.elastic.get('movies', film_id)
+            doc = await self.elastic.get('movies', id)
         except NotFoundError:
             return None
         logging.info(f'got film from elasticsearch {doc}')
@@ -184,20 +176,3 @@ class FilmService:
         results = await self.elastic.search(index='movies', body=body)
         hits = results['hits']['hits']
         return [FilmBase(**hit['_source']) for hit in hits]
-
-
-@lru_cache()
-def get_film_service(
-    redis: Redis = Depends(get_redis),
-    elastic: AsyncElasticsearch = Depends(get_elastic),
-) -> FilmService:
-    """Вернуть сервис для работы с эндпоинтами /films.
-
-    Args:
-        redis: Соединение с redis.
-        elastic: Соединение с elasticsearch.
-
-    Returns:
-        Сервис, обслуживающий эндпоинты фильмов.
-    """
-    return FilmService(redis, elastic)

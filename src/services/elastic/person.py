@@ -1,14 +1,7 @@
-"""Доступ к персонам в индексах ElasticSearch."""
-from functools import lru_cache
 from typing import Iterable
 
-from elasticsearch import AsyncElasticsearch
-from fastapi import Depends
-
-from db.elastic import get_elastic
-from models.base_model import DBModel
-from models.person import Person
-from services.elastic import ElasticService
+from models.elastic.base_model import ElasticModel
+from services.elastic.base import ElasticService
 
 
 class PersonService(ElasticService):
@@ -16,7 +9,7 @@ class PersonService(ElasticService):
 
     async def search(
             self, query: str, limit: int, offset: int,
-            ) -> Iterable[DBModel]:
+            ) -> Iterable[ElasticModel]:
         """Найти персон по имени и с паджинацией.
 
         Args:
@@ -45,18 +38,3 @@ class PersonService(ElasticService):
             index=self.index, body=body, params=params)
         hits = results['hits']['hits']
         return [self._to_object(hit) for hit in hits]
-
-
-@lru_cache()
-def get_person_service(
-        elastic: AsyncElasticsearch = Depends(get_elastic),
-        ) -> PersonService:
-    """Получить сервис для доступа к персонам.
-
-    Args:
-        elastic: Клиент для ElasticSearch.
-
-    Returns:
-        Сервис для доступа к персонам из индекса Elastic.
-    """
-    return PersonService(elastic, 'persons', Person)

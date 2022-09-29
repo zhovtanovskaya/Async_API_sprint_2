@@ -1,9 +1,9 @@
 from pydantic.fields import Field
 
-from models.base_model import DBModel
+from models.elastic.base_model import ElasticModel
 
 
-class PersonBase(DBModel):
+class PersonBase(ElasticModel):
     """Базовый класс для валидации записи индекса 'person'.
 
     Необходим для вложенного использования в других валидаторах.

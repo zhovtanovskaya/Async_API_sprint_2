@@ -9,9 +9,11 @@ from pydantic import BaseModel
 
 from api.v1.redis_cache import RedisCache
 from db.redis import get_redis
-from models.film import Film
-from models.film_base import FilmBase
-from services.film import FilmService, get_film_service
+from models.elastic.film import Film
+from models.elastic.film_base import FilmBase
+from services.abstract import AbstractDetailsService
+from services.base import get_film_service
+from services.elastic.film import FilmService
 
 router = APIRouter()
 
@@ -111,7 +113,7 @@ async def films_search(
 @RedisCache(exclude_kwargs=('film_service',))
 async def film_details(
     film_id: uuid.UUID,
-    film_service: FilmService = Depends(get_film_service),
+    film_service: AbstractDetailsService = Depends(get_film_service),
     redis: Redis = Depends(get_redis),
 ) -> Film:
     """Вернуть найденный объект фильма или 404.
