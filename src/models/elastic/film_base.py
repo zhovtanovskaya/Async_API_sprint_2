@@ -1,7 +1,7 @@
-from .base_model import DBModel
+from .base_model import ElasticModel
 
 
-class FilmBase(DBModel):
+class FilmBase(ElasticModel):
     """Базовый валидатор записи индекса 'movies'.
 
     Необходим для вложенного использования в других валидаторах.

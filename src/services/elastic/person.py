@@ -1,6 +1,6 @@
 from typing import Iterable
 
-from models.elastic.base_model import DBModel
+from models.elastic.base_model import ElasticModel
 from services.elastic.base import ElasticService
 
 
@@ -9,7 +9,7 @@ class PersonService(ElasticService):
 
     async def search(
             self, query: str, limit: int, offset: int,
-            ) -> Iterable[DBModel]:
+            ) -> Iterable[ElasticModel]:
         """Найти персон по имени и с паджинацией.
 
         Args:

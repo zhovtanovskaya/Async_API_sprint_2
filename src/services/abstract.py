@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from models.elastic.base_model import DBModel
+from models.abstract import DBModel
 
 
 class AbstractObjectService(ABC):

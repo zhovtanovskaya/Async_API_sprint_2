@@ -2,23 +2,23 @@ from typing import Iterable
 
 from elasticsearch import AsyncElasticsearch, NotFoundError
 
-from models.elastic.base_model import DBModel
+from models.elastic.base_model import ElasticModel
 from services.abstract import AbstractObjectService
 
 
 class ElasticService(AbstractObjectService):
     """Сервис для получения объектов из индексов Elastic объектов."""
 
-    def __init__(self, elastic: AsyncElasticsearch, index: str, db_model: DBModel):
+    def __init__(self, elastic: AsyncElasticsearch, index: str, db_model: ElasticModel):
         self.elastic = elastic
         self.index = index
         self.db_model = db_model
 
-    def _to_object(self, doc: dict) -> DBModel:
+    def _to_object(self, doc: dict) -> ElasticModel:
         """Преобразовать документ индекса Elastic в объект."""
         return self.db_model(**doc['_source'])
 
-    async def get_by_id(self, id: str) -> DBModel | None:
+    async def get_by_id(self, id: str) -> ElasticModel | None:
         """Получить жанр по ID.
 
         Args:
@@ -33,7 +33,7 @@ class ElasticService(AbstractObjectService):
             return None
         return self._to_object(doc)
 
-    async def get_all(self) -> Iterable[DBModel]:
+    async def get_all(self) -> Iterable[ElasticModel]:
         """Получить все записи в индексе.
 
         Returns:
