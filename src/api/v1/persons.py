@@ -5,7 +5,7 @@ from uuid import UUID
 from aioredis import Redis
 from fastapi import APIRouter, Depends, HTTPException, Query
 
-from api.v1.models import Film, Person
+from models.api.v1.movies import Film, Person
 from api.v1.redis_cache import RedisCache
 from db.redis import get_redis
 from services.film import FilmService, get_film_service

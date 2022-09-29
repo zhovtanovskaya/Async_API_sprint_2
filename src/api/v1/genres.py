@@ -6,7 +6,7 @@ from uuid import UUID
 from aioredis import Redis
 from fastapi import APIRouter, Depends, HTTPException
 
-from api.v1.models import Genre
+from models.api.v1.movies import Genre
 from api.v1.redis_cache import RedisCache
 from db.redis import get_redis
 from services.genre import GenreService, get_genre_service
