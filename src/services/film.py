@@ -10,11 +10,12 @@ from db.elastic import get_elastic
 from db.redis import get_redis
 from models.elastic.film import Film
 from models.elastic.film_base import FilmBase
+from services.base import AbstractObjectService
 
 FILM_CACHE_EXPIRE_IN_SECONDS = 60 * 5
 
 
-class FilmService:
+class FilmService(AbstractObjectService):
     """Сервис по получению данных по эндпоинтам /films."""
 
     def __init__(self, redis: Redis, elastic: AsyncElasticsearch) -> None:
@@ -31,17 +32,17 @@ class FilmService:
         self.elastic = elastic
         self.sort_fields = ['imdb_rating',]
 
-    async def get_by_id(self, film_id: str) -> Film | None:
+    async def get_by_id(self, id: str) -> Film | None:
         """Найти фильм в базе данных elasticsearch.
 
         Args:
-            film_id: uuid фильма.
+            id: uuid фильма.
 
         Returns:
             Объект типа Film или None, если фильм не найден.
         """
         try:
-            doc = await self.elastic.get('movies', film_id)
+            doc = await self.elastic.get('movies', id)
         except NotFoundError:
             return None
         logging.info(f'got film from elasticsearch {doc}')
