@@ -1,18 +1,12 @@
 import logging
-from functools import lru_cache
 from uuid import UUID
 
 from aioredis import Redis
 from elasticsearch import AsyncElasticsearch, NotFoundError
-from fastapi import Depends
 
-from db.elastic import get_elastic
-from db.redis import get_redis
 from models.elastic.film import Film
 from models.elastic.film_base import FilmBase
-from services.base import AbstractObjectService
-
-FILM_CACHE_EXPIRE_IN_SECONDS = 60 * 5
+from services.abstract import AbstractObjectService
 
 
 class FilmService(AbstractObjectService):
@@ -185,20 +179,3 @@ class FilmService(AbstractObjectService):
         results = await self.elastic.search(index='movies', body=body)
         hits = results['hits']['hits']
         return [FilmBase(**hit['_source']) for hit in hits]
-
-
-@lru_cache()
-def get_film_service(
-    redis: Redis = Depends(get_redis),
-    elastic: AsyncElasticsearch = Depends(get_elastic),
-) -> FilmService:
-    """Вернуть сервис для работы с эндпоинтами /films.
-
-    Args:
-        redis: Соединение с redis.
-        elastic: Соединение с elasticsearch.
-
-    Returns:
-        Сервис, обслуживающий эндпоинты фильмов.
-    """
-    return FilmService(redis, elastic)

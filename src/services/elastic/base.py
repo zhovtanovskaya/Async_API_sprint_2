@@ -3,7 +3,7 @@ from typing import Iterable
 from elasticsearch import AsyncElasticsearch, NotFoundError
 
 from models.elastic.base_model import DBModel
-from services.base import AbstractObjectService
+from services.abstract import AbstractObjectService
 
 
 class ElasticService(AbstractObjectService):

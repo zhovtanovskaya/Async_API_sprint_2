@@ -8,9 +8,10 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from models.api.v1.movies import Film, Person
 from api.v1.redis_cache import RedisCache
 from db.redis import get_redis
-from services.base import AbstractObjectService
-from services.film import FilmService, get_film_service
-from services.person import PersonService, get_person_service
+from services.abstract import AbstractObjectService
+from services.base import get_film_service, get_person_service
+from services.elastic.film import FilmService
+from services.elastic.person import PersonService
 
 router = APIRouter()
 

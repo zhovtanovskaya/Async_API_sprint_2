@@ -11,8 +11,9 @@ from api.v1.redis_cache import RedisCache
 from db.redis import get_redis
 from models.elastic.film import Film
 from models.elastic.film_base import FilmBase
-from services.base import AbstractObjectService
-from services.film import FilmService, get_film_service
+from services.abstract import AbstractObjectService
+from services.base import get_film_service
+from services.elastic.film import FilmService
 
 router = APIRouter()
 
