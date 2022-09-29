@@ -2,7 +2,7 @@ from typing import Iterable
 
 from elasticsearch import AsyncElasticsearch, NotFoundError
 
-from models.base_model import DBModel
+from models.elastic.base_model import DBModel
 from services.base import AbstractService
 
 

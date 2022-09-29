@@ -9,8 +9,8 @@ from pydantic import BaseModel
 
 from api.v1.redis_cache import RedisCache
 from db.redis import get_redis
-from models.film import Film
-from models.film_base import FilmBase
+from models.elastic.film import Film
+from models.elastic.film_base import FilmBase
 from services.film import FilmService, get_film_service
 
 router = APIRouter()

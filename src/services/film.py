@@ -8,8 +8,8 @@ from fastapi import Depends
 
 from db.elastic import get_elastic
 from db.redis import get_redis
-from models.film import Film
-from models.film_base import FilmBase
+from models.elastic.film import Film
+from models.elastic.film_base import FilmBase
 
 FILM_CACHE_EXPIRE_IN_SECONDS = 60 * 5
 

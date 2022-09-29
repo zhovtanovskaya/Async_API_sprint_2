@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Iterable
 
-from models.base_model import DBModel
+from models.elastic.base_model import DBModel
 
 
 class AbstractService(ABC):

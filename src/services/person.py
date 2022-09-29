@@ -6,8 +6,8 @@ from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
 
 from db.elastic import get_elastic
-from models.base_model import DBModel
-from models.person import Person
+from models.elastic.base_model import DBModel
+from models.elastic.person import Person
 from services.elastic import ElasticService
 
 

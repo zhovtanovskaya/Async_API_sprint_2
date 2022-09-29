@@ -1,6 +1,6 @@
 from pydantic.fields import Field
 
-from models.base_model import DBModel
+from models.elastic.base_model import DBModel
 
 
 class PersonBase(DBModel):
