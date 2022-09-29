@@ -5,10 +5,10 @@ from elasticsearch import AsyncElasticsearch, NotFoundError
 
 from models.elastic.film import Film
 from models.elastic.film_base import FilmBase
-from services.abstract import AbstractObjectService
+from services.abstract import AbstractDetailsService
 
 
-class FilmService(AbstractObjectService):
+class FilmService(AbstractDetailsService):
     """Сервис по получению данных по эндпоинтам /films."""
 
     def __init__(self, elastic: AsyncElasticsearch) -> None:

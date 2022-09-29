@@ -3,10 +3,10 @@ from typing import Iterable
 from elasticsearch import AsyncElasticsearch, NotFoundError
 
 from models.elastic.base_model import ElasticModel
-from services.abstract import AbstractObjectService
+from services.abstract import AbstractDetailsService
 
 
-class ElasticService(AbstractObjectService):
+class ElasticService(AbstractDetailsService):
     """Сервис для получения объектов из индексов Elastic объектов."""
 
     def __init__(self, elastic: AsyncElasticsearch, index: str, db_model: ElasticModel):
