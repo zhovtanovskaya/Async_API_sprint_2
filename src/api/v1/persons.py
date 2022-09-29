@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from models.api.v1.movies import Film, Person
 from api.v1.redis_cache import RedisCache
 from db.redis import get_redis
+from services.base import AbstractObjectService
 from services.film import FilmService, get_film_service
 from services.person import PersonService, get_person_service
 
@@ -33,7 +34,7 @@ async def search_persons(
 @RedisCache(exclude_kwargs=('person_service',))
 async def person_details(
         person_id: UUID,
-        person_service: PersonService = Depends(get_person_service),
+        person_service: AbstractObjectService = Depends(get_person_service),
         redis: Redis = Depends(get_redis),
         ) -> Person | None:
     """Получить персону по идентификатору."""
