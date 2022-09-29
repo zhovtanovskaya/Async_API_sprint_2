@@ -1,7 +1,6 @@
 import logging
 from uuid import UUID
 
-from aioredis import Redis
 from elasticsearch import AsyncElasticsearch, NotFoundError
 
 from models.elastic.film import Film
@@ -12,17 +11,15 @@ from services.abstract import AbstractObjectService
 class FilmService(AbstractObjectService):
     """Сервис по получению данных по эндпоинтам /films."""
 
-    def __init__(self, redis: Redis, elastic: AsyncElasticsearch) -> None:
-        """Инициализировать сервис, установив соединения с Redis и ES.
+    def __init__(self, elastic: AsyncElasticsearch) -> None:
+        """Инициализировать сервис, установив соединение с ES.
 
         Args:
-            redis: соединение с Redis.
             elastic: соединение с Elasticsearch.
 
         Returns:
             None.
         """
-        self.redis = redis
         self.elastic = elastic
         self.sort_fields = ['imdb_rating',]
 
