@@ -9,13 +9,21 @@ from elasticsearch import AsyncElasticsearch
 from tests.functional.settings import test_settings
 
 
-#  Название теста должно начинаться со слова `test_`
-#  Любой тест с асинхронными вызовами нужно оборачивать
-#  декоратором `pytest.mark.asyncio`, который следит за
-#  запуском и работой цикла событий.
-
+@pytest.mark.parametrize(
+    'query_data, expected_answer',
+    [
+        (
+                {'query': 'The Star'},
+                {'status': 200, 'length': 100}
+        ),
+        (
+                {'query': 'Mashedpotato'},
+                {'status': 200, 'length': 0}
+        ),
+    ]
+)
 @pytest.mark.asyncio
-async def test_search():
+async def test_search(query_data, expected_answer):
     # 1. Генерируем данные для ES
 
     es_data = [{
@@ -40,7 +48,14 @@ async def test_search():
     bulk_query = []
     for row in es_data:
         bulk_query.extend([
-            json.dumps({'index': {'_index': test_settings.elastic_index, '_id': row[test_settings.elastic_id_field]}}),
+            json.dumps(
+                {
+                    'index': {
+                        '_index': test_settings.elastic_index,
+                        '_id': row[test_settings.elastic_id_field],
+                    },
+                }
+            ),
             json.dumps(row)
         ])
 
@@ -60,7 +75,6 @@ async def test_search():
 
     session = aiohttp.ClientSession()
     url = test_settings.api_url + '/api/v1/films/search'
-    query_data = {'query': 'The Star'}
     async with session.get(url, params=query_data) as response:
         body = await response.json()
         headers = response.headers
@@ -68,5 +82,5 @@ async def test_search():
     await session.close()
 
     # 4. Проверяем ответ
-    assert status == 200
-    assert len(body) == 100
+    assert status == expected_answer['status']
+    assert len(body) == expected_answer['length']
