@@ -5,7 +5,7 @@ import pickle
 from functools import wraps
 from typing import Any, Callable, Iterable
 
-from aioredis import Redis
+from db.redis import get_redis
 
 CACHE_EXPIRE_IN_SECONDS = 60 * 5
 
@@ -14,11 +14,11 @@ class RedisCache:
     """Кэшировать результат работы функции-контроллера в Redis.
 
     Чтобы использовать этот декоратор, обязательно указывать его
-    первым снизу среди декораторов и передавать в контроллер
-    redis как зависимость:
+    первым снизу среди декораторов:
     @get(...)
-    @RedisCache((...))
-    def path_operation_function(..., redis: Redis = Depends(get_redis)):
+    @RedisCache(...)
+    def path_operation_function(...):
+        ...
 
     Ключ для хранения результата работы контроллера в кэше
     -- это сигнатура вызова контроллера.  В сигнатуру не включаются
@@ -46,17 +46,17 @@ class RedisCache:
             Обертка, которая сохраняет и достает из кэша результаты path_func.
         """
         @wraps(path_func)
-        async def caching_wrapper(*args: Any, redis: Redis, **kwargs: Any) -> Any:
+        async def caching_wrapper(*args: Any, **kwargs: Any) -> Any:
             """Доставать и сохранять результат работы контроллера в Redis.
 
             Args:
                 args: Позиционные аргументы контроллера.
-                redis: Асинхронный клиент для Redis.
                 kwargs: Ключевые аргументы контроллера.
 
             Returns:
                 Результат работы контроллера либо вычисленный, либо из Redis.
             """
+            redis = await get_redis()
             key = _get_func_signature(
                 path_func, args, kwargs, self.exclude_kwargs)
             cached_result = await redis.get(key)
@@ -92,3 +92,4 @@ def _get_func_signature(
     for kwarg_name in exclude_kwargs:
         del key_kwargs[kwarg_name]
     return f'{func.__module__}.{func.__name__}(*{args}, **{key_kwargs})'
+

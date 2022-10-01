@@ -1,14 +1,12 @@
 import uuid
 from http import HTTPStatus
 
-from aioredis import Redis
 from fastapi.exceptions import HTTPException
 from fastapi.param_functions import Depends, Query
 from fastapi.routing import APIRouter
 from pydantic import BaseModel
 
 from api.v1.redis_cache import RedisCache
-from db.redis import get_redis
 from models.elastic.film import Film
 from models.elastic.film_base import FilmBase
 from services.abstract import AbstractDetailsService
@@ -84,7 +82,6 @@ async def films_search(
     ),
     params=Depends(get_params),
     film_service: FilmService = Depends(get_film_service),
-    redis: Redis = Depends(get_redis),
 ) -> list[FilmBase]:
     """Вернуть список фильмов.
 
@@ -114,7 +111,6 @@ async def films_search(
 async def film_details(
     film_id: uuid.UUID,
     film_service: AbstractDetailsService = Depends(get_film_service),
-    redis: Redis = Depends(get_redis),
 ) -> Film:
     """Вернуть найденный объект фильма или 404.
 
@@ -143,7 +139,6 @@ async def film_details(
 async def films_list(
     params=Depends(get_params),
     film_service: FilmService = Depends(get_film_service),
-    redis: Redis = Depends(get_redis),
 ) -> list[FilmBase]:
     """Вернуть список фильмов.
 
