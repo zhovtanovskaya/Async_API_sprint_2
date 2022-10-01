@@ -9,6 +9,42 @@ from elasticsearch import AsyncElasticsearch
 from tests.functional.settings import test_settings
 
 
+def get_es_bulk_query(data, elastic_index, elastic_id_field):
+    bulk_query = []
+    for row in data:
+        bulk_query.extend([
+            json.dumps(
+                {
+                    'index': {
+                        '_index': elastic_index,
+                        '_id': row[elastic_id_field],
+                    },
+                }
+            ),
+            json.dumps(row)
+        ])
+    return bulk_query
+
+
+@pytest.fixture
+def es_write_data():
+    async def inner(data: list[dict]):
+        bulk_query = get_es_bulk_query(
+            data,
+            test_settings.elastic_index,
+            test_settings.elastic_id_field)
+        str_query = '\n'.join(bulk_query) + '\n'
+
+        es_client = AsyncElasticsearch(hosts=test_settings.elastic_host,
+                                       validate_cert=False,
+                                       use_ssl=False)
+        response = await es_client.bulk(str_query, refresh=True)
+        await es_client.close()
+        if response['errors']:
+            raise Exception('Ошибка записи данных в Elasticsearch')
+    return inner
+
+
 @pytest.mark.parametrize(
     'query_data, expected_answer',
     [
@@ -23,7 +59,7 @@ from tests.functional.settings import test_settings
     ]
 )
 @pytest.mark.asyncio
-async def test_search(query_data, expected_answer):
+async def test_search(es_write_data, query_data, expected_answer):
     # 1. Генерируем данные для ES
 
     es_data = [{
@@ -44,32 +80,7 @@ async def test_search(query_data, expected_answer):
             {'id': '444', 'name': 'Howard'}
         ],
     } for _ in range(60)]
-
-    bulk_query = []
-    for row in es_data:
-        bulk_query.extend([
-            json.dumps(
-                {
-                    'index': {
-                        '_index': test_settings.elastic_index,
-                        '_id': row[test_settings.elastic_id_field],
-                    },
-                }
-            ),
-            json.dumps(row)
-        ])
-
-    str_query = '\n'.join(bulk_query) + '\n'
-
-    # 2. Загружаем данные в ES
-
-    es_client = AsyncElasticsearch(hosts=test_settings.elastic_host,
-                                   validate_cert=False,
-                                   use_ssl=False)
-    response = await es_client.bulk(str_query, refresh=True)
-    await es_client.close()
-    if response['errors']:
-        raise Exception('Ошибка записи данных в Elasticsearch')
+    await es_write_data(es_data)
 
     # 3. Запрашиваем данные из ES по API
 
