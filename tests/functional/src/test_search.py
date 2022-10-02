@@ -48,6 +48,14 @@ def es_write_data(es_client):
 
 
 @pytest.fixture
+def es_delete_data(es_client):
+    async def inner(data: list[dict]):
+        for obj in data:
+            await es_client.delete(test_settings.elastic_index, obj['id'])
+    return inner
+
+
+@pytest.fixture
 def make_get_request():
     async def inner(path, query_data):
         session = aiohttp.ClientSession()
@@ -61,27 +69,9 @@ def make_get_request():
     return inner
 
 
-@pytest.mark.parametrize(
-    'query_data, expected_answer',
-    [
-        (
-            {'query': 'The Star'},
-            {'status': 200, 'length': 100},
-        ),
-        (
-            {'query': 'Mashedpotato'},
-            {'status': 200, 'length': 0},
-        ),
-        (
-            {'query': 'The Star', 'page[size]': 0},
-            {'status': 200, 'length': 0},
-        )
-    ]
-)
-@pytest.mark.asyncio
-async def test_search(es_write_data, make_get_request, query_data, expected_answer):
-    # Сгенерировать данные для ES.
-    es_data = [{
+@pytest.fixture
+def es_data():
+    return [{
         'id': str(uuid.uuid4()),
         'imdb_rating': 8.5,
         'genre': ['Action', 'Sci-Fi'],
@@ -99,7 +89,65 @@ async def test_search(es_write_data, make_get_request, query_data, expected_answ
             {'id': '444', 'name': 'Howard'}
         ],
     } for _ in range(60)]
+
+
+@pytest.mark.parametrize(
+    'query_data, expected_answer',
+    [
+        (
+            {'query': 'The Star'},
+            {'status': 200, 'length': 100},
+        ),
+        (
+            {'query': 'Mashedpotato'},
+            {'status': 200, 'length': 0},
+        ),
+        (
+            {'query': 'The Star', 'page[size]': 0},
+            {'status': 200, 'length': 0},
+        ),
+    ]
+)
+@pytest.mark.asyncio
+async def test_search(
+        es_data,
+        es_write_data,
+        make_get_request,
+        query_data,
+        expected_answer,
+        ):
     await es_write_data(es_data)
+    # Запросить данные из ES по API.
+    response = await make_get_request('/api/v1/films/search', query_data)
+    body = await response.json()
+    # Проверить ответ.
+    assert response.status == expected_answer['status']
+    assert len(body) == expected_answer['length']
+
+
+@pytest.mark.parametrize(
+    'query_data, expected_answer',
+    [
+        (
+            {'query': 'The Star'},
+            {'status': 200, 'length': 100},
+        ),
+    ]
+)
+@pytest.mark.asyncio
+async def test_search_cache(
+        es_data,
+        es_write_data,
+        es_delete_data,
+        make_get_request,
+        query_data,
+        expected_answer,
+        ):
+    await es_write_data(es_data)
+    # Сделать запрос, который закэширует фильм.
+    await make_get_request('/api/v1/films/search', query_data)
+    # Удалить фильм из ES.
+    await es_delete_data(es_data)
     # Запросить данные из ES по API.
     response = await make_get_request('/api/v1/films/search', query_data)
     body = await response.json()
