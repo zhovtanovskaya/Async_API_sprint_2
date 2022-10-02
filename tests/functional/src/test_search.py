@@ -65,13 +65,17 @@ def make_get_request():
     'query_data, expected_answer',
     [
         (
-                {'query': 'The Star'},
-                {'status': 200, 'length': 100}
+            {'query': 'The Star'},
+            {'status': 200, 'length': 100},
         ),
         (
-                {'query': 'Mashedpotato'},
-                {'status': 200, 'length': 0}
+            {'query': 'Mashedpotato'},
+            {'status': 200, 'length': 0},
         ),
+        (
+            {'query': 'The Star', 'page[size]': 0},
+            {'status': 200, 'length': 0},
+        )
     ]
 )
 @pytest.mark.asyncio
