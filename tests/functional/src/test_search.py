@@ -47,6 +47,20 @@ def es_write_data(es_client):
     return inner
 
 
+@pytest.fixture
+def make_get_request():
+    async def inner(path, query_data):
+        session = aiohttp.ClientSession()
+        url = test_settings.api_url + path
+        async with session.get(url, params=query_data) as response:
+            body = await response.json()
+            headers = response.headers
+            status = response.status
+        await session.close()
+        return response
+    return inner
+
+
 @pytest.mark.parametrize(
     'query_data, expected_answer',
     [
@@ -61,9 +75,8 @@ def es_write_data(es_client):
     ]
 )
 @pytest.mark.asyncio
-async def test_search(es_write_data, query_data, expected_answer):
-    # 1. Генерируем данные для ES
-
+async def test_search(es_write_data, make_get_request, query_data, expected_answer):
+    # Сгенерировать данные для ES.
     es_data = [{
         'id': str(uuid.uuid4()),
         'imdb_rating': 8.5,
@@ -83,17 +96,9 @@ async def test_search(es_write_data, query_data, expected_answer):
         ],
     } for _ in range(60)]
     await es_write_data(es_data)
-
-    # 3. Запрашиваем данные из ES по API
-
-    session = aiohttp.ClientSession()
-    url = test_settings.api_url + '/api/v1/films/search'
-    async with session.get(url, params=query_data) as response:
-        body = await response.json()
-        headers = response.headers
-        status = response.status
-    await session.close()
-
-    # 4. Проверяем ответ
-    assert status == expected_answer['status']
+    # Запросить данные из ES по API.
+    response = await make_get_request('/api/v1/films/search', query_data)
+    body = await response.json()
+    # Проверить ответ.
+    assert response.status == expected_answer['status']
     assert len(body) == expected_answer['length']
