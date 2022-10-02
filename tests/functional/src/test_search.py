@@ -2,6 +2,7 @@ import uuid
 import json
 
 import aiohttp
+import aioredis
 import pytest
 
 from elasticsearch import AsyncElasticsearch
@@ -31,6 +32,16 @@ async def es_client():
     client = AsyncElasticsearch(hosts='127.0.0.1:9200')
     yield client
     await client.close()
+
+
+@pytest.fixture
+async def redis_client():
+    redis = await aioredis.create_redis_pool(
+        (test_settings.redis_host, test_settings.redis_port),
+    )
+    yield redis
+    redis.close()
+    await redis.wait_closed()
 
 
 @pytest.fixture
@@ -67,6 +78,11 @@ def make_get_request():
         await session.close()
         return response
     return inner
+
+
+@pytest.fixture
+async def flush_cache(redis_client):
+    await redis_client.flushall()
 
 
 @pytest.fixture
@@ -113,6 +129,7 @@ async def test_search(
         es_data,
         es_write_data,
         make_get_request,
+        flush_cache,
         query_data,
         expected_answer,
         ):
@@ -135,11 +152,12 @@ async def test_search(
     ]
 )
 @pytest.mark.asyncio
-async def test_search_cache(
+async def test_search_in_cache(
         es_data,
         es_write_data,
         es_delete_data,
         make_get_request,
+        flush_cache,
         query_data,
         expected_answer,
         ):
