@@ -29,7 +29,8 @@ def get_es_bulk_query(data, elastic_index, elastic_id_field):
 
 @pytest.fixture
 async def es_client():
-    client = AsyncElasticsearch(hosts='127.0.0.1:9200')
+    hosts = [f'{test_settings.elastic_host}:{test_settings.elastic_port}']
+    client = AsyncElasticsearch(hosts=hosts)
     yield client
     await client.close()
 
