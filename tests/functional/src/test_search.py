@@ -1,38 +1,16 @@
 import uuid
-import json
 
 import aiohttp
 import aioredis
 import pytest
 
-from elasticsearch import AsyncElasticsearch
-
 from tests.functional.settings import test_settings
-
-
-def get_es_bulk_query(data, elastic_index, elastic_id_field):
-    bulk_query = []
-    for row in data:
-        bulk_query.extend([
-            json.dumps(
-                {
-                    'index': {
-                        '_index': elastic_index,
-                        '_id': row[elastic_id_field],
-                    },
-                }
-            ),
-            json.dumps(row)
-        ])
-    return bulk_query
+from tests.functional.src.elastic import es_client, es_write_data
 
 
 @pytest.fixture
-async def es_client():
-    hosts = [f'{test_settings.elastic_host}:{test_settings.elastic_port}']
-    client = AsyncElasticsearch(hosts=hosts)
-    yield client
-    await client.close()
+def es_write_to_index(es_write_data):
+    return lambda data: es_write_data(data, test_settings.elastic_index)
 
 
 @pytest.fixture
@@ -43,20 +21,6 @@ async def redis_client():
     yield redis
     redis.close()
     await redis.wait_closed()
-
-
-@pytest.fixture
-def es_write_data(es_client):
-    async def inner(data: list[dict]):
-        bulk_query = get_es_bulk_query(
-            data,
-            test_settings.elastic_index,
-            test_settings.elastic_id_field)
-        str_query = '\n'.join(bulk_query) + '\n'
-        response = await es_client.bulk(str_query, refresh=True)
-        if response['errors']:
-            raise Exception('Ошибка записи данных в Elasticsearch')
-    return inner
 
 
 @pytest.fixture
@@ -128,13 +92,13 @@ def es_data():
 @pytest.mark.asyncio
 async def test_search(
         es_data,
-        es_write_data,
+        es_write_to_index,
         make_get_request,
         flush_cache,
         query_data,
         expected_answer,
         ):
-    await es_write_data(es_data)
+    await es_write_to_index(es_data)
     # Запросить данные из ES по API.
     response = await make_get_request('/api/v1/films/search', query_data)
     body = await response.json()
@@ -155,14 +119,14 @@ async def test_search(
 @pytest.mark.asyncio
 async def test_search_in_cache(
         es_data,
-        es_write_data,
+        es_write_to_index,
         es_delete_data,
         make_get_request,
         flush_cache,
         query_data,
         expected_answer,
         ):
-    await es_write_data(es_data)
+    await es_write_to_index(es_data)
     # Сделать запрос, который закэширует фильм.
     await make_get_request('/api/v1/films/search', query_data)
     # Удалить фильм из ES.
