@@ -1,4 +1,4 @@
-import uuid
+from http import HTTPStatus
 
 import pytest
 
@@ -28,12 +28,12 @@ def es_data():
     [
         (
             {'id': '5373d043-3f41-4ea8-9947-4b746c601bcc'},
-            {'status': 200},
+            {'status': HTTPStatus.OK},
             {'name': 'Action'},
         ),
         (
             {'id': 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'},
-            {'status': 404},
+            {'status': HTTPStatus.NOT_FOUND},
             {'detail': 'Genre not found.'}
         ),
     ]
@@ -60,7 +60,7 @@ async def test_get_genre_by_id(
     'response_data',
     [
         (
-            {'status': 200}
+            {'status': HTTPStatus.OK}
         ),
     ]
 )

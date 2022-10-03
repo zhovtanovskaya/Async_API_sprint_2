@@ -1,4 +1,5 @@
 import uuid
+from http import HTTPStatus
 
 import aioredis
 import pytest
@@ -63,15 +64,15 @@ def es_data():
     [
         (
             {'query': 'The Star'},
-            {'status': 200, 'length': 100},
+            {'status': HTTPStatus.OK, 'length': 100},
         ),
         (
             {'query': 'Mashedpotato'},
-            {'status': 200, 'length': 0},
+            {'status': HTTPStatus.OK, 'length': 0},
         ),
         (
             {'query': 'The Star', 'page[size]': 0},
-            {'status': 200, 'length': 0},
+            {'status': HTTPStatus.OK, 'length': 0},
         ),
     ]
 )
@@ -98,7 +99,7 @@ async def test_search(
     [
         (
             {'query': 'The Star'},
-            {'status': 200, 'length': 100},
+            {'status': HTTPStatus.OK, 'length': 100},
         ),
     ]
 )
