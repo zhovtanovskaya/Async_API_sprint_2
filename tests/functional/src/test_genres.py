@@ -54,3 +54,25 @@ async def test_get_genre_by_id(
     for key in response_body.keys():
         assert key in body
         assert body[key] == response_body[key]
+
+
+@pytest.mark.parametrize(
+    'response_data',
+    [
+        (
+            {'status': 200}
+        ),
+    ]
+)
+@pytest.mark.asyncio
+async def test_get_genres(
+        es_data,
+        es_write_to_index,
+        make_get_request,
+        response_data,
+        ):
+    await es_write_to_index(es_data)
+    response = await make_get_request('/api/v1/genres/')
+    body = await response.json()
+    assert response.status == response_data['status']
+    assert len(body) > 0
