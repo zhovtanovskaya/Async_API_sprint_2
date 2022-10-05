@@ -9,17 +9,19 @@ from tests.functional.src.redis_cache import redis_client, flush_cache
 
 @pytest.fixture
 def es_write_to_index(es_write_data):
-    return lambda data: es_write_data(data, 'genres')
+    return lambda data: es_write_data(data, 'persons')
 
 
 @pytest.fixture
 def es_data():
     return [
         {
-            'id': '5373d043-3f41-4ea8-9947-4b746c601bcc',
-            "name": "Action",
-            "description": None,
-            "film_ids": [],
+            'id': 'b5d2b63a-ed1f-4e46-8320-cf52a32be358',
+            'name': 'Carrie Fisher',
+            'film_ids': [
+                '025c58cd-1b7e-43be-9ffb-8571a613579b',
+             ],
+            'role': ['actor'],
         },
     ]
 
@@ -28,19 +30,19 @@ def es_data():
     'request_data, response_data, response_body',
     [
         (
-            {'id': '5373d043-3f41-4ea8-9947-4b746c601bcc'},
+            {'id': '24de5fe8-985c-4e73-92d4-da015d4beea4'},
             {'status': HTTPStatus.OK},
-            {'name': 'Action'},
+            {'full_name': 'Caitlin Fowler'},
         ),
         (
             {'id': 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'},
             {'status': HTTPStatus.NOT_FOUND},
-            {'detail': 'Genre not found.'}
+            {'detail': 'Person not found.'}
         ),
     ]
 )
 @pytest.mark.asyncio
-async def test_get_genre_by_id(
+async def test_get_person_by_id(
         es_data,
         es_write_to_index,
         make_get_request,
@@ -50,30 +52,7 @@ async def test_get_genre_by_id(
         response_body,
         ):
     await es_write_to_index(es_data)
-    response = await make_get_request(f'/api/v1/genres/{request_data["id"]}')
+    response = await make_get_request(f'/api/v1/persons/{request_data["id"]}')
     body = await response.json()
     assert response.status == response_data['status']
     assert body.items() >= response_body.items()
-
-
-@pytest.mark.parametrize(
-    'response_data',
-    [
-        (
-            {'status': HTTPStatus.OK}
-        ),
-    ]
-)
-@pytest.mark.asyncio
-async def test_get_genres(
-        es_data,
-        es_write_to_index,
-        make_get_request,
-        flush_cache,
-        response_data,
-        ):
-    await es_write_to_index(es_data)
-    response = await make_get_request('/api/v1/genres/')
-    body = await response.json()
-    assert response.status == response_data['status']
-    assert len(body) > 0
