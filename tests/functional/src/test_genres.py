@@ -4,6 +4,7 @@ import pytest
 
 from tests.functional.src.elastic import es_client, es_write_data
 from tests.functional.src.api_requests import make_get_request
+from tests.functional.src.redis_cache import redis_client, flush_cache
 
 
 @pytest.fixture
@@ -43,6 +44,7 @@ async def test_get_genre_by_id(
         es_data,
         es_write_to_index,
         make_get_request,
+        flush_cache,
         request_data,
         response_data,
         response_body,
@@ -69,6 +71,7 @@ async def test_get_genres(
         es_data,
         es_write_to_index,
         make_get_request,
+        flush_cache,
         response_data,
         ):
     await es_write_to_index(es_data)
