@@ -25,6 +25,14 @@ def es_write_data(es_client):
     return inner
 
 
+@pytest.fixture
+def es_delete_data(es_client):
+    async def inner(data: list[dict]):
+        for obj in data:
+            await es_client.delete(test_settings.elastic_index, obj['id'])
+    return inner
+
+
 def get_es_bulk_query(data, elastic_index, elastic_id_field):
     bulk_query = []
     for row in data:
