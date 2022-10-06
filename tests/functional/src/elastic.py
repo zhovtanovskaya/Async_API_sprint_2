@@ -27,9 +27,9 @@ def es_write_data(es_client):
 
 @pytest.fixture
 def es_delete_data(es_client):
-    async def inner(data: list[dict]):
+    async def inner(data: list[dict], index: str):
         for obj in data:
-            await es_client.delete(test_settings.elastic_index, obj['id'])
+            await es_client.delete(index, obj['id'])
     return inner
 
 

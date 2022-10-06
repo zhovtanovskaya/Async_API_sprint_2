@@ -2,6 +2,7 @@ from http import HTTPStatus
 
 import pytest
 
+from tests.functional.settings import test_settings
 from tests.functional.src.api_requests import make_get_request
 from tests.functional.src.elastic import es_client, es_write_data
 from tests.functional.src.redis_cache import redis_client, flush_cache
@@ -9,12 +10,12 @@ from tests.functional.src.redis_cache import redis_client, flush_cache
 
 @pytest.fixture
 def es_write_persons(es_write_data):
-    return lambda data: es_write_data(data, 'persons')
+    return lambda data: es_write_data(data, test_settings.elastic_index_mapping['persons'])
 
 
 @pytest.fixture
 def es_write_movies(es_write_data):
-    return lambda data: es_write_data(data, 'movies')
+    return lambda data: es_write_data(data, test_settings.elastic_index_mapping['movies'])
 
 
 @pytest.fixture

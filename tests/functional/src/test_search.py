@@ -11,7 +11,8 @@ from tests.functional.src.redis_cache import redis_client, flush_cache
 
 @pytest.fixture
 def es_write_to_index(es_write_data):
-    return lambda data: es_write_data(data, test_settings.elastic_index)
+    return lambda data: es_write_data(
+        data, test_settings.elastic_index_mapping['movies'])
 
 
 @pytest.fixture
@@ -94,7 +95,7 @@ async def test_search_in_cache(
     # Сделать запрос, который закэширует фильм.
     await make_get_request('/api/v1/films/search', query_data)
     # Удалить фильм из ES.
-    await es_delete_data(es_data)
+    await es_delete_data(es_data, test_settings.elastic_index_mapping['movies'])
     # Запросить данные из ES по API.
     response = await make_get_request('/api/v1/films/search', query_data)
     body = await response.json()
