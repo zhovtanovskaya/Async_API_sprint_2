@@ -2,14 +2,15 @@ from http import HTTPStatus
 
 import pytest
 
-from tests.functional.src.elastic import es_client, es_write_data
+from tests.functional.settings import test_settings
 from tests.functional.src.api_requests import make_get_request
+from tests.functional.src.elastic import es_client, es_write_data
 from tests.functional.src.redis_cache import redis_client, flush_cache
 
 
 @pytest.fixture
 def es_write_to_index(es_write_data):
-    return lambda data: es_write_data(data, 'genres')
+    return lambda data: es_write_data(data, test_settings.elastic_index_mapping['genres'])
 
 
 @pytest.fixture
@@ -20,7 +21,7 @@ def es_data():
             "name": "Action",
             "description": None,
             "film_ids": [],
-        }
+        },
     ]
 
 
@@ -53,9 +54,7 @@ async def test_get_genre_by_id(
     response = await make_get_request(f'/api/v1/genres/{request_data["id"]}')
     body = await response.json()
     assert response.status == response_data['status']
-    for key in response_body.keys():
-        assert key in body
-        assert body[key] == response_body[key]
+    assert body.items() >= response_body.items()
 
 
 @pytest.mark.parametrize(

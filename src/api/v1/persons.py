@@ -41,7 +41,7 @@ async def person_details(
     return Person(uuid=person.id, full_name=person.name, **person.dict())
 
 
-@router.get('/{person_id}/film', response_model=list[Film])
+@router.get('/{person_id}/films', response_model=list[Film])
 @RedisCache(exclude_kwargs=('film_service', 'person_service',))
 async def person_films(
         person_id: UUID,
