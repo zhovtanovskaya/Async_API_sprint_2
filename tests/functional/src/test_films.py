@@ -1,4 +1,3 @@
-import uuid
 from http import HTTPStatus
 
 import pytest
@@ -18,7 +17,7 @@ def es_write_to_index(es_write_data):
 @pytest.fixture
 def es_data():
     return [{
-        'id': str(uuid.uuid4()),
+        'id': '4c730b51-539c-405d-b7c1-e25b70f11202',
         'imdb_rating': 8.5,
         'genre': ['Action', 'Sci-Fi'],
         'title': 'The Star',
@@ -34,7 +33,39 @@ def es_data():
             {'id': '333', 'name': 'Ben'},
             {'id': '444', 'name': 'Howard'}
         ],
-    } for _ in range(60)]
+    }]
+
+
+@pytest.mark.parametrize(
+    'request_data, response_data, response_body',
+    [
+        (
+            {'id': '4c730b51-539c-405d-b7c1-e25b70f11202'},
+            {'status': HTTPStatus.OK},
+            {'title': 'The Star'},
+        ),
+        (
+            {'id': 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'},
+            {'status': HTTPStatus.NOT_FOUND},
+            {'detail': 'film not found'}
+        ),
+    ]
+)
+@pytest.mark.asyncio
+async def test_get_film_by_id(
+        es_data,
+        es_write_to_index,
+        make_get_request,
+        flush_cache,
+        request_data,
+        response_data,
+        response_body,
+        ):
+    await es_write_to_index(es_data)
+    response = await make_get_request(f'/api/v1/films/{request_data["id"]}')
+    body = await response.json()
+    assert response.status == response_data['status']
+    assert body.items() >= response_body.items()
 
 
 @pytest.mark.parametrize(
