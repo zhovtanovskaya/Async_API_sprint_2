@@ -111,3 +111,28 @@ async def test_get_person_films(
     body = await response.json()
     assert response.status == response_data['status']
     assert body[0].items() >= response_body.items()
+
+
+@pytest.mark.parametrize(
+    'query_data, response_data',
+    [
+        (
+            {'query': 'cary fisher'},
+            {'status': HTTPStatus.OK},
+        ),
+    ]
+)
+@pytest.mark.asyncio
+async def test_search_persons(
+        es_persons,
+        es_write_persons,
+        make_get_request,
+        flush_cache,
+        query_data,
+        response_data,
+        ):
+    await es_write_persons(es_persons)
+    response = await make_get_request(f'/api/v1/persons/search', query_data)
+    body = await response.json()
+    assert response.status == response_data['status']
+    assert len(body) > 0
