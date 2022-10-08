@@ -70,7 +70,8 @@ def get_params(
 @router.get(
     path='/search',
     response_model=list[FilmBase],
-    description='Поиск фильмов.',
+    summary='Поиск фильма по названию.',
+    response_description='Ограниченный список фильмов с похожими названиями.',
 )
 @RedisCache(exclude_kwargs=('film_service',))
 async def films_search(
@@ -105,14 +106,15 @@ async def films_search(
 @router.get(
     path='/{film_id}',
     response_model=Film,
-    description='Информация о фильме.',
+    summary='Подробности о фильме.',
+    response_description='Детали о фильме и персонах, его создавших.',
 )
 @RedisCache(exclude_kwargs=('film_service',))
 async def film_details(
     film_id: uuid.UUID,
     film_service: AbstractDetailsService = Depends(get_film_service),
 ) -> Film:
-    """Вернуть найденный объект фильма или 404.
+    """Получить детали о фильме.
 
     Args:
         film_id: uuid фильма.
@@ -133,7 +135,8 @@ async def film_details(
 @router.get(
     path='',
     response_model=list[FilmBase],
-    description='Список фильмов.',
+    summary='Получить одну страницу с фильмами.',
+    response_description='Ограниченный список названий и рейтингов фильмов.',
 )
 @RedisCache(exclude_kwargs=('film_service',))
 async def films_list(

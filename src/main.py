@@ -12,9 +12,11 @@ from core.config import settings
 from db import elastic, redis
 
 app = FastAPI(
-    title=settings.project_name,
-    docs_url='/api/openapi',
-    openapi_url='/api/openapi.json',
+    title='Read-only API для онлайн-кинотеатра',
+    description='Получение фильмов, жанров, персон.',
+    version='1.0.0',
+    docs_url='/api/v1/openapi',
+    openapi_url='/api/v1/openapi.json',
     default_response_class=ORJSONResponse,
 )
 
