@@ -14,7 +14,12 @@ from services.elastic.person import PersonService
 router = APIRouter()
 
 
-@router.get('/search', response_model=list[Person])
+@router.get(
+    '/search',
+    response_model=list[Person],
+    summary='Поиск персон по имени.',
+    response_description='Список персон с указанием ролей и фильмов каждой.',
+)
 @RedisCache(exclude_kwargs=('person_service',))
 async def search_persons(
         query: str,
@@ -28,27 +33,45 @@ async def search_persons(
     return [Person(uuid=p.id, full_name=p.name, **p.dict()) for p in persons]
 
 
-@router.get('/{person_id}', response_model=Person)
+@router.get(
+    '/{person_id}',
+    response_model=Person,
+    summary='Получить персону по идентификатору.',
+    response_description='Детали о персоне с указанием ее ролей и фильмов.',
+)
 @RedisCache(exclude_kwargs=('person_service',))
 async def person_details(
         person_id: UUID,
         person_service: AbstractDetailsService = Depends(get_person_service),
         ) -> Person | None:
-    """Получить персону по идентификатору."""
+    """Получить персону по идентификатору.
+
+    Raises:
+        HTTPException(404), если персоны с таким person_id нет в базе.
+    """
     person = await person_service.get_by_id(person_id)
     if not person:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Person not found.')
     return Person(uuid=person.id, full_name=person.name, **person.dict())
 
 
-@router.get('/{person_id}/films', response_model=list[Film])
+@router.get(
+    '/{person_id}/films',
+    response_model=list[Film],
+    summary='Получить список фильмов персоны.',
+    response_description='Список названий и рейтингов фильмов персоны.',
+)
 @RedisCache(exclude_kwargs=('film_service', 'person_service',))
 async def person_films(
         person_id: UUID,
         film_service: FilmService = Depends(get_film_service),
         person_service: PersonService = Depends(get_person_service),
         ) -> list[Film]:
-    """Получить список фильмов персоны."""
+    """Получить список фильмов персоны.
+
+    Raises:
+        HTTPException(404), если персоны с таким person_id нет в базе.
+    """
     person = await person_service.get_by_id(person_id)
     if not person:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Person not found.')
