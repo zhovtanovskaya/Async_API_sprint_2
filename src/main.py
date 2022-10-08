@@ -7,6 +7,7 @@ from fastapi.applications import FastAPI
 from fastapi.responses import ORJSONResponse
 
 from api.v1 import films, genres, persons
+from availability.backoff import backoff
 from core.config import settings
 from db import elastic, redis
 
@@ -19,6 +20,7 @@ app = FastAPI(
 
 
 @app.on_event('startup')
+@backoff(exceptions=(ConnectionRefusedError,))
 async def startup():
     elastic.es = AsyncElasticsearch(hosts=[f'{settings.elastic_host}:{settings.elastic_port}'])
     logging.debug(f'connected to elasticsearch by {settings.elastic_host}:{settings.elastic_port}')
