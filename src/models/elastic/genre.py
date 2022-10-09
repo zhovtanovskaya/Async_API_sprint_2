@@ -1,3 +1,5 @@
+"""Модели жанров для сервисов."""
+
 from uuid import UUID
 
 from models.elastic.genre_base import GenreBase

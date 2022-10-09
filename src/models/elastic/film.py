@@ -1,3 +1,5 @@
+"""Модели фильмов для сервисов."""
+
 from .film_base import FilmBase
 from .genre_base import GenreBase
 from .person_base import PersonBase

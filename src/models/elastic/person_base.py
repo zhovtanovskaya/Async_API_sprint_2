@@ -1,3 +1,5 @@
+"""Модели персон для сервисов."""
+
 from pydantic.fields import Field
 
 from models.elastic.base_model import ElasticModel

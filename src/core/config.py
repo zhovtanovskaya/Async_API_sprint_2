@@ -1,6 +1,5 @@
 """Настройки uvicorn-сервера."""
 
-import os
 from logging import config as logging_config
 
 from pydantic import BaseSettings
@@ -11,6 +10,8 @@ logging_config.dictConfig(LOGGING)
 
 
 class Settings(BaseSettings):
+    """Настройки главного модуля проекта."""
+
     project_name: str = 'movies'
     redis_host: str = '127.0.0.1'
     redis_port: int = 6379
