@@ -1,7 +1,6 @@
 """API для жанров."""
 
 from http import HTTPStatus
-from typing import Iterable
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -17,14 +16,14 @@ router = APIRouter()
 
 @router.get(
     '',
-    response_model=Iterable[Genre],
+    response_model=list[Genre],
     summary='Список жанров.',
     response_description='Список из деталей о жанре и фильмами каждого жанра.',
 )
 @RedisCache(exclude_kwargs=('genre_service',))
 async def genre_list(
         genre_service: GenreService = Depends(get_genre_service),
-        ) -> Iterable[Genre]:
+        ) -> list[Genre]:
     """Получить список всех жанров."""
     elastic_genres = await genre_service.get_all()
     genres = [Genre(uuid=g.id, **g.dict()) for g in elastic_genres]
