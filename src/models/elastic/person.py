@@ -1,3 +1,5 @@
+"""Модели персон для сервисов."""
+
 from uuid import UUID
 
 from .person_base import PersonBase

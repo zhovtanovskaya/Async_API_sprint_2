@@ -1,7 +1,6 @@
 """Перезапуск функций в случае исключения."""
 
 import time
-
 from functools import wraps
 from typing import Any, Callable, TypeVar, Union
 

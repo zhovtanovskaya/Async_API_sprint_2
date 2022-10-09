@@ -1,3 +1,5 @@
+"""Фабрики сервисов для работы с БД."""
+
 from functools import lru_cache
 
 from elasticsearch import AsyncElasticsearch
@@ -15,13 +17,13 @@ from services.elastic.person import PersonService
 def get_film_service(
     elastic: AsyncElasticsearch = Depends(get_elastic),
 ) -> FilmService:
-    """Вернуть сервис для работы с эндпоинтами /films.
+    """Получить сервис для доступа к фильмам в БД.
 
     Args:
-        elastic: Соединение с elasticsearch.
+        elastic: Асинхронный клиент для ElasticSearch.
 
     Returns:
-        Сервис, обслуживающий эндпоинты фильмов.
+        Сервис для доступа к персонам в Elastic.
     """
     return FilmService(elastic)
 
@@ -33,7 +35,7 @@ def get_genre_service(
     """Получить сервис для доступа к жанрам.
 
     Args:
-        elastic: Клиент для ElasticSearch.
+        elastic: Асинхронный клиент для ElasticSearch.
 
     Returns:
         Сервис для доступа к жанрам в Elastic.
@@ -48,7 +50,7 @@ def get_person_service(
     """Получить сервис для доступа к персонам.
 
     Args:
-        elastic: Клиент для ElasticSearch.
+        elastic: Асинхронный клиент для ElasticSearch.
 
     Returns:
         Сервис для доступа к персонам из индекса Elastic.

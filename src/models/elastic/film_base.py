@@ -1,3 +1,5 @@
+"""Модели фильмов для сервисов."""
+
 from .base_model import ElasticModel
 
 

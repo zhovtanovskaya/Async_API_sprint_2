@@ -1,3 +1,5 @@
+"""Модели жанров для сервисов."""
+
 from .base_model import ElasticModel
 
 
