@@ -1,3 +1,5 @@
+"""Тесты REST API персон."""
+
 from http import HTTPStatus
 
 import pytest
@@ -5,7 +7,7 @@ import pytest
 from tests.functional.settings import test_settings
 from tests.functional.src.api_requests import make_get_request
 from tests.functional.src.elastic import es_client, es_write_data
-from tests.functional.src.redis_cache import redis_client, flush_cache
+from tests.functional.src.redis_cache import flush_cache, redis_client
 
 
 @pytest.fixture
@@ -43,12 +45,12 @@ def es_movies():
             'actors': [
                 {
                     'id': 'b5d2b63a-ed1f-4e46-8320-cf52a32be358',
-                    'name': 'Carrie Fisher'
+                    'name': 'Carrie Fisher',
                 },
             ],
             'director': [],
-            'writers': []
-        }
+            'writers': [],
+        },
     ]
 
 
@@ -63,9 +65,9 @@ def es_movies():
         (
             {'person_id': 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'},
             {'status': HTTPStatus.NOT_FOUND},
-            {'detail': 'Person not found.'}
+            {'detail': 'Person not found.'},
         ),
-    ]
+    ],
 )
 @pytest.mark.asyncio
 async def test_get_person_by_id(
@@ -92,7 +94,7 @@ async def test_get_person_by_id(
             {'status': HTTPStatus.OK},
             {'title': 'Star Wars: Episode VI - Return of the Jedi'},
         ),
-    ]
+    ],
 )
 @pytest.mark.asyncio
 async def test_get_person_films(
@@ -108,7 +110,8 @@ async def test_get_person_films(
         ):
     await es_write_persons(es_persons)
     await es_write_movies(es_movies)
-    response = await make_get_request(f'/api/v1/persons/{request_data["person_id"]}/films')
+    response = await make_get_request(
+        f'/api/v1/persons/{request_data["person_id"]}/films')
     body = await response.json()
     assert response.status == response_data['status']
     assert body[0].items() >= response_body.items()
@@ -121,7 +124,7 @@ async def test_get_person_films(
             {'query': 'cary fisher'},
             {'status': HTTPStatus.OK},
         ),
-    ]
+    ],
 )
 @pytest.mark.asyncio
 async def test_search_persons(

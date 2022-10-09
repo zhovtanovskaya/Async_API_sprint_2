@@ -1,7 +1,11 @@
-from pydantic import BaseSettings, Field
+"""Настройки функциональных тестов."""
+
+from pydantic import BaseSettings
 
 
 class TestSettings(BaseSettings):
+    """Настройки функциональных тестов."""
+
     elastic_host: str = '127.0.0.1'
     elastic_port: int = 9200
     elastic_id_field: str = 'id'

@@ -1,6 +1,8 @@
-import json
-import pytest
+"""Фикстуры для работы с Elastic в тестах."""
 
+import json
+
+import pytest
 from elasticsearch import AsyncElasticsearch
 
 from tests.functional.settings import test_settings
@@ -43,7 +45,7 @@ def get_es_bulk_query(data, elastic_index, elastic_id_field):
                         '_index': elastic_index,
                         '_id': row[elastic_id_field],
                     },
-                }
+                },
             ),
             json.dumps(row)
         ])

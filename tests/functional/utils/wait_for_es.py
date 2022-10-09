@@ -1,3 +1,5 @@
+"""Модуль для Docker, который дожидается старта Elastic."""
+
 import time
 
 from elasticsearch import Elasticsearch

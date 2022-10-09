@@ -1,11 +1,14 @@
+"""Тесты REST API фильмов."""
+
 from http import HTTPStatus
 
 import pytest
 
 from tests.functional.settings import test_settings
 from tests.functional.src.api_requests import make_get_request
-from tests.functional.src.elastic import es_client, es_delete_data, es_write_data
-from tests.functional.src.redis_cache import redis_client, flush_cache
+from tests.functional.src.elastic import (es_client, es_delete_data,
+                                          es_write_data)
+from tests.functional.src.redis_cache import flush_cache, redis_client
 
 
 @pytest.fixture
@@ -149,7 +152,8 @@ async def test_search_in_cache(
     # Сделать запрос, который закэширует фильм.
     await make_get_request('/api/v1/films/search', query_data)
     # Удалить фильм из ES.
-    await es_delete_data(es_data, test_settings.elastic_index_mapping['movies'])
+    await es_delete_data(
+        es_data, test_settings.elastic_index_mapping['movies'])
     # Запросить данные из ES по API.
     response = await make_get_request('/api/v1/films/search', query_data)
     body = await response.json()

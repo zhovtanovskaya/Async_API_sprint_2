@@ -1,3 +1,5 @@
+"""Тесты REST API жанров."""
+
 from http import HTTPStatus
 
 import pytest
@@ -5,7 +7,7 @@ import pytest
 from tests.functional.settings import test_settings
 from tests.functional.src.api_requests import make_get_request
 from tests.functional.src.elastic import es_client, es_write_data
-from tests.functional.src.redis_cache import redis_client, flush_cache
+from tests.functional.src.redis_cache import flush_cache, redis_client
 
 
 @pytest.fixture
@@ -18,9 +20,9 @@ def es_data():
     return [
         {
             'id': '5373d043-3f41-4ea8-9947-4b746c601bcc',
-            "name": "Action",
-            "description": None,
-            "film_ids": [],
+            'name': 'Action',
+            'description': None,
+            'film_ids': [],
         },
     ]
 
@@ -36,9 +38,9 @@ def es_data():
         (
             {'id': 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'},
             {'status': HTTPStatus.NOT_FOUND},
-            {'detail': 'Genre not found.'}
+            {'detail': 'Genre not found.'},
         ),
-    ]
+    ],
 )
 @pytest.mark.asyncio
 async def test_get_genre_by_id(

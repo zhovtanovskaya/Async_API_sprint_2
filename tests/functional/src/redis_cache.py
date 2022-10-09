@@ -1,3 +1,5 @@
+"""Фикстуры для работы с кэшем в Redis."""
+
 import aioredis
 import pytest
 
