@@ -6,8 +6,8 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from models.api.v1.movies import Genre
 from api.v1.redis_cache import RedisCache
+from models.api.v1.movies import Genre
 from services.abstract import AbstractDetailsService
 from services.base import get_genre_service
 from services.elastic.genre import GenreService
@@ -45,7 +45,7 @@ async def genre_details(
     """Получить жанр по идентификатору.
 
     Raises:
-        HTTPException(404), если жанра с таким genre_id нет в базе.
+        HTTPException: С параметром status_code=404, если жанра нет в базе.
     """
     genre = await genre_service.get_by_id(genre_id)
     if not genre:

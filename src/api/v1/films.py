@@ -1,3 +1,5 @@
+"""API для доступа к фильмам."""
+
 import uuid
 from http import HTTPStatus
 
@@ -26,34 +28,37 @@ class ParamsModel(BaseModel):
 
 
 def get_params(
-    page_number: int = Query(
-        default=1,
-        title='Номер страницы',
-        alias='page[number]',
-    ),
-    page_size: int = Query(
-        default=100,
-        title='Размер страницы',
-        alias='page[size]',
-    ),
-    sort: str = Query(
-        default='',
-        title='Сортировка',
-        description='Сортировка принимает значение imdb_rating. "-" в начале для обратной сортировки',
-        alias='sort',
-    ),
-    filter_genre: str = Query(
-        default='',
-        title='Фильтрация по жанру (uuid).',
-        alias='filter[genre]',
-    ),
-):
+        page_number: int = Query(
+            default=1,
+            title='Номер страницы',
+            alias='page[number]',
+        ),
+        page_size: int = Query(
+            default=100,
+            title='Размер страницы',
+            alias='page[size]',
+        ),
+        sort: str = Query(
+            default='',
+            title='Сортировка',
+            description=(
+                'Сортировка принимает значение imdb_rating.'
+                '"-" в начале для обратной сортировки'
+            ),
+            alias='sort',
+        ),
+        filter_genre: str = Query(
+            default='',
+            title='Фильтрация по жанру (uuid).',
+            alias='filter[genre]',
+        ),
+        ):
     """Получить объект модели с параметрами и описаниями полей запроса.
 
     Args:
+        page_number: Отступ в общем списке фильмов по номеру страницы.
         page_size: Количество фильмов на одной странице.
-        pase_number: Отступ в общем списке фильмов по номеру страницы.
-        sort: Сортировка по названию поля. "-" в начале для обратной сортировки.
+        sort: Сортировка по названию поля. "-" для сортировки по убыванию.
         filter_genre: uuid жанра, к которому должны принадлежать фильмы.
 
     Returns:
@@ -75,15 +80,18 @@ def get_params(
 )
 @RedisCache(exclude_kwargs=('film_service',))
 async def films_search(
-    query: str = Query(
-        default='',
-        title='Поиск',
-        description='Строка поиска. Поиск производится по названию и описанию фильма.',
-        alias='query',
-    ),
-    params=Depends(get_params),
-    film_service: FilmService = Depends(get_film_service),
-) -> list[FilmBase]:
+        query: str = Query(
+            default='',
+            title='Поиск',
+            description=(
+                'Строка поиска. Поиск по названию '
+                'и описанию фильма.'
+            ),
+            alias='query',
+        ),
+        params=Depends(get_params),
+        film_service: FilmService = Depends(get_film_service),
+        ) -> list[FilmBase]:
     """Вернуть список фильмов.
 
     Args:
@@ -111,9 +119,9 @@ async def films_search(
 )
 @RedisCache(exclude_kwargs=('film_service',))
 async def film_details(
-    film_id: uuid.UUID,
-    film_service: AbstractDetailsService = Depends(get_film_service),
-) -> Film:
+        film_id: uuid.UUID,
+        film_service: AbstractDetailsService = Depends(get_film_service),
+        ) -> Film:
     """Получить детали о фильме.
 
     Args:
@@ -124,7 +132,7 @@ async def film_details(
         Объектное представление записи из индекса 'movies'.
 
     Raises:
-        HTTPException со status code 404.
+        HTTPException: С параметром status_code=404, если фильма нет в базе.
     """
     film = await film_service.get_by_id(str(film_id))
     if not film:
@@ -140,9 +148,9 @@ async def film_details(
 )
 @RedisCache(exclude_kwargs=('film_service',))
 async def films_list(
-    params=Depends(get_params),
-    film_service: FilmService = Depends(get_film_service),
-) -> list[FilmBase]:
+        params=Depends(get_params),
+        film_service: FilmService = Depends(get_film_service),
+        ) -> list[FilmBase]:
     """Вернуть список фильмов.
 
     Args:
