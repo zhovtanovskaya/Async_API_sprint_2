@@ -6,7 +6,6 @@ from http import HTTPStatus
 from fastapi.exceptions import HTTPException
 from fastapi.param_functions import Depends, Query
 from fastapi.routing import APIRouter
-from pydantic import BaseModel
 
 from api.v1.redis_cache import RedisCache
 from models.elastic.film import Film
@@ -14,62 +13,10 @@ from models.elastic.film_base import FilmBase
 from services.abstract import AbstractDetailsService
 from services.base import get_film_service
 from services.elastic.film import FilmService
+from uri.filtering.param_functions import get_film_filter_params
+from uri.pagination.param_functions import get_page_params
 
 router = APIRouter()
-
-
-class ParamsModel(BaseModel):
-    """Модель с общими параметрами для списка фильмов и поиска."""
-
-    page_number: int
-    page_size: int
-    sort: str
-    filter_genre: str
-
-
-def get_params(
-        page_number: int = Query(
-            default=1,
-            title='Номер страницы',
-            alias='page[number]',
-        ),
-        page_size: int = Query(
-            default=100,
-            title='Размер страницы',
-            alias='page[size]',
-        ),
-        sort: str = Query(
-            default='',
-            title='Сортировка',
-            description=(
-                'Сортировка принимает значение imdb_rating.'
-                '"-" в начале для обратной сортировки'
-            ),
-            alias='sort',
-        ),
-        filter_genre: str = Query(
-            default='',
-            title='Фильтрация по жанру (uuid).',
-            alias='filter[genre]',
-        ),
-        ):
-    """Получить объект модели с параметрами и описаниями полей запроса.
-
-    Args:
-        page_number: Отступ в общем списке фильмов по номеру страницы.
-        page_size: Количество фильмов на одной странице.
-        sort: Сортировка по названию поля. "-" для сортировки по убыванию.
-        filter_genre: uuid жанра, к которому должны принадлежать фильмы.
-
-    Returns:
-        Объект ParamsModel.
-    """
-    return ParamsModel(
-        page_size=page_size,
-        page_number=page_number,
-        sort=sort,
-        filter_genre=filter_genre,
-    )
 
 
 @router.get(
@@ -89,24 +36,25 @@ async def films_search(
             ),
             alias='query',
         ),
-        params=Depends(get_params),
+        page=Depends(get_page_params),
+        filter=Depends(get_film_filter_params),
         film_service: FilmService = Depends(get_film_service),
         ) -> list[FilmBase]:
     """Вернуть список фильмов.
 
     Args:
         query: Строка поиска.
-        params: Общие параметры.
+        filter: Требования к фильтрации и сортировке фильмов.
         film_service: Сервис по получению фильмов.
 
     Returns:
         Список объектных представлений записей из индекса 'movies'.
     """
     return await film_service.get_films_list(
-        params.page_number,
-        params.page_size,
-        params.sort,
-        params.filter_genre,
+        page.number,
+        page.size,
+        filter.sort,
+        filter.genre,
         query,
     )
 
@@ -148,21 +96,22 @@ async def film_details(
 )
 @RedisCache(exclude_kwargs=('film_service',))
 async def films_list(
-        params=Depends(get_params),
+        page=Depends(get_page_params),
+        filter=Depends(get_film_filter_params),
         film_service: FilmService = Depends(get_film_service),
         ) -> list[FilmBase]:
     """Вернуть список фильмов.
 
     Args:
-        params: Общие параметры.
+        filter: Требования к фильтрации и сортировке фильмов.
         film_service: Сервис по получению фильмов.
 
     Returns:
         Список объектных представлений записей из индекса 'movies'.
     """
     return await film_service.get_films_list(
-        params.page_number,
-        params.page_size,
-        params.sort,
-        params.filter_genre,
+        page.number,
+        page.size,
+        filter.sort,
+        filter.genre,
     )
