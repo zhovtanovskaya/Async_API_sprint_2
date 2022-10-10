@@ -1,17 +1,18 @@
 """Функции для параметров постраничной разбивки в URI."""
 
 from fastapi import Query
+from pydantic import PositiveInt
 
 from uri.pagination.pages import Page
 
 
 def get_page_params(
-        page_number: int = Query(
+        page_number: PositiveInt = Query(
             default=1,
             title='Номер страницы',
             alias='page[number]',
         ),
-        page_size: int = Query(
+        page_size: PositiveInt = Query(
             default=100,
             title='Размер страницы',
             alias='page[size]',
