@@ -72,23 +72,37 @@ async def test_get_film_by_id(
 
 
 @pytest.mark.parametrize(
-    'response_data',
+    'query_data, response_data',
     [
         (
-            {'status': HTTPStatus.OK}
+            {},
+            {'status': HTTPStatus.OK},
+        ),
+        (
+                {'page[number]': 1, 'page[size]': 1},
+                {'status': HTTPStatus.OK},
+        ),
+        (
+                {'sort': '-imdb_rating'},
+                {'status': HTTPStatus.OK},
+        ),
+        (
+                {'genre': 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'},
+                {'status': HTTPStatus.OK},
         ),
     ]
 )
 @pytest.mark.asyncio
-async def test_get_genres(
+async def test_get_films(
         es_data,
         es_write_to_index,
         make_get_request,
         flush_cache,
+        query_data,
         response_data,
         ):
     await es_write_to_index(es_data)
-    response = await make_get_request('/api/v1/films')
+    response = await make_get_request('/api/v1/films', query_data)
     body = await response.json()
     assert response.status == response_data['status']
     assert len(body) > 0
