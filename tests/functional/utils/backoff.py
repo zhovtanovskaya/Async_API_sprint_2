@@ -1,4 +1,4 @@
-"""Перезапуск асинхронных функций в случае исключения."""
+"""Перезапуск синхронных функций в случае исключения."""
 
 import time
 from functools import wraps
@@ -13,7 +13,7 @@ def backoff(
         factor: Union[int, float] = 2,
         border_sleep_time: Union[int, float] = 10,
         ) -> Callable[[F], F]:
-    """Перезапускает асинхронную функцию в ответ на исключения от нее.
+    """Перезапускает синхронную функцию в ответ на исключения от нее.
 
     Использует наивный экспоненциальный рост времени
     повтора (factor) до граничного времени ожидания (border_sleep_time).
@@ -33,11 +33,11 @@ def backoff(
     """
     def func_wrapper(func: Callable[[F], F]) -> Callable[[F], F]:
         @wraps(func)
-        async def inner(*args, **kwargs):
+        def inner(*args, **kwargs):
             sleep_time = start_sleep_time
             while True:
                 try:
-                    return await func(*args, **kwargs)
+                    return func(*args, **kwargs)
                 except exceptions:
                     sleep_time = sleep_time * factor
                     if sleep_time > border_sleep_time:
