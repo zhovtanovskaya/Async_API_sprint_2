@@ -124,6 +124,14 @@ async def test_get_person_films(
             {'query': 'cary fisher'},
             {'status': HTTPStatus.OK},
         ),
+        (
+            {'query': 'cary fisher', 'page[number]': 1, 'page[size]': 1},
+            {'status': HTTPStatus.OK},
+        ),
+        (
+                {'query': 'cary fisher', 'page[number]': -1},
+                {'status': HTTPStatus.UNPROCESSABLE_ENTITY},
+        ),
     ],
 )
 @pytest.mark.asyncio

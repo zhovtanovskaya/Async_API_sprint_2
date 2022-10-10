@@ -50,7 +50,7 @@ def es_data():
         (
             {'id': 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'},
             {'status': HTTPStatus.NOT_FOUND},
-            {'detail': 'film not found'}
+            {'detail': 'film not found'},
         ),
     ]
 )
@@ -121,7 +121,7 @@ async def test_get_films(
         ),
         (
             {'query': 'The Star', 'page[size]': 0},
-            {'status': HTTPStatus.OK, 'length': 0},
+            {'status': HTTPStatus.UNPROCESSABLE_ENTITY, 'length': 1},
         ),
     ]
 )
