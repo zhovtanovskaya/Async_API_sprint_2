@@ -10,7 +10,7 @@
 
 # Ревьюеру
 
-[Ссылка](https://github.com/zhovtanovskaya/Async_API_sprint_1) на репозиторий с проектной работой по AsyncAPI.
+[Ссылка](https://github.com/zhovtanovskaya/Async_API_sprint_2) на репозиторий с проектной работой по AsyncAPI.
 [Ссылка](https://github.com/zhovtanovskaya/new_admin_panel_sprint_3) на репозиторий с проектной работой ETL.  В него вносились правки в алгоритм ETL, нужные AsyncAPI.  И на GitHub этот репозиторий связан с [образом](https://github.com/zhovtanovskaya/new_admin_panel_sprint_3/pkgs/container/new_admin_panel_sprint_3_etl) ETL для Docker Compose в проекте AsyncAPI.
 
 # Настройка окружения
