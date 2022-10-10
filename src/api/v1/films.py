@@ -13,7 +13,9 @@ from models.elastic.film_base import FilmBase
 from services.abstract import AbstractDetailsService
 from services.base import get_film_service
 from services.elastic.film import FilmService
+from uri.filtering.filters import FilmFilter
 from uri.filtering.param_functions import get_film_filter_params
+from uri.pagination.pages import Page
 from uri.pagination.param_functions import get_page_params
 
 router = APIRouter()
@@ -36,8 +38,8 @@ async def films_search(
             ),
             alias='query',
         ),
-        page=Depends(get_page_params),
-        filter=Depends(get_film_filter_params),
+        page: Page = Depends(get_page_params),
+        filter: FilmFilter = Depends(get_film_filter_params),
         film_service: FilmService = Depends(get_film_service),
         ) -> list[FilmBase]:
     """Вернуть список фильмов.
@@ -96,8 +98,8 @@ async def film_details(
 )
 @RedisCache(exclude_kwargs=('film_service',))
 async def films_list(
-        page=Depends(get_page_params),
-        filter=Depends(get_film_filter_params),
+        page: Page = Depends(get_page_params),
+        filter: FilmFilter = Depends(get_film_filter_params),
         film_service: FilmService = Depends(get_film_service),
         ) -> list[FilmBase]:
     """Вернуть список фильмов.
