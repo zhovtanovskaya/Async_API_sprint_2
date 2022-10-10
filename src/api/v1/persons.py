@@ -9,6 +9,8 @@ from services.abstract import AbstractDetailsService
 from services.base import get_film_service, get_person_service
 from services.elastic.film import FilmService
 from services.elastic.person import PersonService
+from uri.pagination.pages import Page
+from uri.pagination.param_functions import get_page_params
 
 router = APIRouter()
 
@@ -22,8 +24,7 @@ router = APIRouter()
 @RedisCache(exclude_kwargs=('person_service',))
 async def search_persons(
         query: str,
-        page_number: int = Query(alias='page[number]', default=1, ge=1),
-        page_size: int = Query(alias='page[size]', default=50, ge=1),
+        page: Page = Depends(get_page_params),
         person_service: PersonService = Depends(get_person_service),
         ) -> list[Person]:
     """Поиск персон.
@@ -34,8 +35,7 @@ async def search_persons(
         page_size: Число совпадений на странице результатов поиска.
         person_service: Сервис для доступа к персонам в БД.
     """
-    offset = page_size * (page_number - 1)
-    persons = await person_service.search(query, page_size, offset)
+    persons = await person_service.search(query, page.limit, page.offset)
     return [Person(uuid=p.id, full_name=p.name, **p.dict()) for p in persons]
 
 
