@@ -32,5 +32,5 @@ def get_film_filter_params(
     """
     return FilmFilter(
         sort=sort,
-        filter_genre=genre,
+        genre=genre,
     )
