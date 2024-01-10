@@ -27,4 +27,4 @@ make run_tests      # Выполнить тесты сервера на хост
 # Примечание. Связанные проекты
 
 [Ссылка](https://github.com/zhovtanovskaya/Async_API_sprint_2) на репозиторий с первой проектной работой по AsyncAPI.
-[Ссылка](https://github.com/zhovtanovskaya/new_admin_panel_sprint_3) на репозиторий с проектной работой ETL из PostgreSQL в ElasticSearch.  В ETL вносились правки, нужные AsyncAPI.  И на GitHub этот репозиторий связан с [образом](https://github.com/zhovtanovskaya/new_admin_panel_sprint_3/pkgs/container/new_admin_panel_sprint_3_etl) ETL для Docker Compose в проекте AsyncAPI.
+[Ссылка](https://github.com/zhovtanovskaya/new_admin_panel_sprint_3) на репозиторий с ETL для наполнения ElasticSearch фильмами, жанрами и персонами из PostgreSQL. На GitHub этот репозиторий связан с [образом](https://github.com/zhovtanovskaya/new_admin_panel_sprint_3/pkgs/container/new_admin_panel_sprint_3_etl) ETL для Docker Compose в проекте AsyncAPI.
